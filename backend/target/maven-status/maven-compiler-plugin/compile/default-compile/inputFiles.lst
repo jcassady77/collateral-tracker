@@ -1,0 +1,7 @@
+/home/ubuntu/collateral-tracker/backend/src/main/java/com/collateraltracker/backend/model/CollateralItem.java
+/home/ubuntu/collateral-tracker/backend/src/main/java/com/collateraltracker/backend/repository/CollateralHistoryRepository.java
+/home/ubuntu/collateral-tracker/backend/src/main/java/com/collateraltracker/backend/BackendApplication.java
+/home/ubuntu/collateral-tracker/backend/src/main/java/com/collateraltracker/backend/model/CollateralHistory.java
+/home/ubuntu/collateral-tracker/backend/src/main/java/com/collateraltracker/backend/controller/CollateralController.java
+/home/ubuntu/collateral-tracker/backend/src/main/java/com/collateraltracker/backend/service/CollateralService.java
+/home/ubuntu/collateral-tracker/backend/src/main/java/com/collateraltracker/backend/repository/CollateralItemRepository.java

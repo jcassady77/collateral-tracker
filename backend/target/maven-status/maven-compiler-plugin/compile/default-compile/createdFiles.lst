@@ -1,0 +1,8 @@
+com/collateraltracker/backend/repository/CollateralHistoryRepository.class
+com/collateraltracker/backend/model/CollateralItem.class
+com/collateraltracker/backend/controller/CollateralController.class
+com/collateraltracker/backend/repository/CollateralItemRepository.class
+com/collateraltracker/backend/service/CollateralService.class
+com/collateraltracker/backend/model/CollateralHistory.class
+com/collateraltracker/backend/BackendApplication$1.class
+com/collateraltracker/backend/BackendApplication.class
