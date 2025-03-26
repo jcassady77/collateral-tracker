@@ -5,7 +5,6 @@ import com.collateraltracker.backend.repository.CREGlossaryTermRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 
 @Service
@@ -26,7 +25,6 @@ public class CREGlossaryService {
         return glossaryTermRepository.save(term);
     }
     
-    @PostConstruct
     public void initializeGlossaryTerms() {
         if (glossaryTermRepository.count() > 0) {
             return;
