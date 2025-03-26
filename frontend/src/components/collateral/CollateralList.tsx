@@ -11,10 +11,11 @@ import { InfoIcon } from '../../components/ui/info-icon';
 
 interface CollateralListProps {
   searchResult?: CollateralItem | null;
+  searchResults?: CollateralItem[];
   onUpdate?: () => void;
 }
 
-const CollateralList: React.FC<CollateralListProps> = ({ searchResult, onUpdate }) => {
+const CollateralList: React.FC<CollateralListProps> = ({ searchResult, searchResults = [], onUpdate }) => {
   const [collateralItems, setCollateralItems] = useState<CollateralItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -28,6 +29,8 @@ const CollateralList: React.FC<CollateralListProps> = ({ searchResult, onUpdate 
     try {
       if (searchResult) {
         setCollateralItems([searchResult]);
+      } else if (searchResults && searchResults.length > 0) {
+        setCollateralItems(searchResults);
       } else {
         const data = await getAllCollateralItems();
         setCollateralItems(data);
@@ -68,7 +71,7 @@ const CollateralList: React.FC<CollateralListProps> = ({ searchResult, onUpdate 
 
   useEffect(() => {
     fetchCollateralItems();
-  }, [searchResult]);
+  }, [searchResult, searchResults]);
   
   const toggleExpandItem = (itemId: string) => {
     setExpandedItems(prev => ({
