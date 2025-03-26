@@ -19,7 +19,7 @@ const CreatePage: React.FC = () => {
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow">
-          <CollateralForm showNameWarning={true} />
+          <CollateralForm showNameWarning={true} hideSearch={true} />
         </div>
       </div>
     </div>

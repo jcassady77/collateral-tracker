@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from "../../components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { CollateralItem, getAllCollateralItems, getCollateralHistory } from '../../api/collateralApi';
 import { format } from 'date-fns';
-import { Eye } from 'lucide-react';
+import { Eye, Edit } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../../components/ui/dialog";
 
 interface CollateralListProps {
@@ -105,48 +106,55 @@ const CollateralList: React.FC<CollateralListProps> = ({ searchResult, onUpdate 
                   <TableCell>{formatDate(item.appraisalDate)}</TableCell>
                   <TableCell>{item.updatedAt ? formatDate(item.updatedAt) : 'N/A'}</TableCell>
                   <TableCell>
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          onClick={() => handleViewHistory(item.id!)}
-                        >
-                          <Eye className="h-4 w-4 mr-1" /> History
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>History for {item.name}</DialogTitle>
-                        </DialogHeader>
-                        {historyLoading ? (
-                          <p>Loading history...</p>
-                        ) : historyData.length === 0 ? (
-                          <p>No history records found for this item.</p>
-                        ) : (
-                          <Table>
-                            <TableHeader>
-                              <TableRow>
-                                <TableHead>Field</TableHead>
-                                <TableHead>Old Value</TableHead>
-                                <TableHead>New Value</TableHead>
-                                <TableHead>Changed At</TableHead>
-                              </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {historyData.map((record) => (
-                                <TableRow key={record.id}>
-                                  <TableCell>{record.fieldName}</TableCell>
-                                  <TableCell>{record.oldValue}</TableCell>
-                                  <TableCell>{record.newValue}</TableCell>
-                                  <TableCell>{formatDate(record.changedAt)}</TableCell>
+                    <div className="flex space-x-2">
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => handleViewHistory(item.id!)}
+                          >
+                            <Eye className="h-4 w-4 mr-1" /> History
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>History for {item.name}</DialogTitle>
+                          </DialogHeader>
+                          {historyLoading ? (
+                            <p>Loading history...</p>
+                          ) : historyData.length === 0 ? (
+                            <p>No history records found for this item.</p>
+                          ) : (
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>Field</TableHead>
+                                  <TableHead>Old Value</TableHead>
+                                  <TableHead>New Value</TableHead>
+                                  <TableHead>Changed At</TableHead>
                                 </TableRow>
-                              ))}
-                            </TableBody>
-                          </Table>
-                        )}
-                      </DialogContent>
-                    </Dialog>
+                              </TableHeader>
+                              <TableBody>
+                                {historyData.map((record) => (
+                                  <TableRow key={record.id}>
+                                    <TableCell>{record.fieldName}</TableCell>
+                                    <TableCell>{record.oldValue}</TableCell>
+                                    <TableCell>{record.newValue}</TableCell>
+                                    <TableCell>{formatDate(record.changedAt)}</TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          )}
+                        </DialogContent>
+                      </Dialog>
+                      <Link to={`/update/${item.id}`}>
+                        <Button variant="outline" size="sm">
+                          <Edit className="h-4 w-4 mr-1" /> Update
+                        </Button>
+                      </Link>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}

@@ -14,17 +14,24 @@ import { Calendar } from 'lucide-react';
 interface CollateralFormProps {
   onSuccess?: () => void;
   showNameWarning?: boolean;
+  initialData?: any;
+  isUpdate?: boolean;
+  hideSearch?: boolean;
 }
 
 const CollateralForm: React.FC<CollateralFormProps> = ({ 
-  onSuccess = () => {}, showNameWarning = false 
+  onSuccess = () => {}, 
+  showNameWarning = false,
+  initialData = null,
+  isUpdate = false,
+  hideSearch = false
 }) => {
-  const [name, setName] = useState('');
-  const [value, setValue] = useState('');
-  const [appraisalDate, setAppraisalDate] = useState('');
+  const [name, setName] = useState(initialData?.name || '');
+  const [value, setValue] = useState(initialData?.value ? initialData.value.toString() : '');
+  const [appraisalDate, setAppraisalDate] = useState(initialData?.appraisalDate || '');
   const [searchName, setSearchName] = useState('');
-  const [isUpdate, setIsUpdate] = useState(false);
-  const [currentItem, setCurrentItem] = useState<CollateralItem | null>(null);
+  const [localIsUpdate, setLocalIsUpdate] = useState(isUpdate);
+  const [currentItem, setCurrentItem] = useState<CollateralItem | null>(initialData);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
@@ -33,7 +40,7 @@ const CollateralForm: React.FC<CollateralFormProps> = ({
     setValue('');
     setAppraisalDate('');
     setCurrentItem(null);
-    setIsUpdate(false);
+    setLocalIsUpdate(false);
     setError('');
     setSuccess('');
   };
@@ -50,12 +57,12 @@ const CollateralForm: React.FC<CollateralFormProps> = ({
       setName(item.name);
       setValue(item.value.toString());
       setAppraisalDate(item.appraisalDate);
-      setIsUpdate(true);
+      setLocalIsUpdate(true);
       setError('');
     } catch (err) {
       setError('Collateral item not found');
       setCurrentItem(null);
-      setIsUpdate(false);
+      setLocalIsUpdate(false);
     }
   };
 
@@ -104,7 +111,7 @@ const CollateralForm: React.FC<CollateralFormProps> = ({
         appraisalDate: appraisalDate
       };
 
-      if (isUpdate && currentItem?.id) {
+      if (localIsUpdate && currentItem?.id) {
         await updateCollateralItem(currentItem.id, collateralItem);
         setSuccess('Collateral item updated successfully');
       } else {
@@ -126,22 +133,24 @@ const CollateralForm: React.FC<CollateralFormProps> = ({
         <CardTitle>{isUpdate ? 'Update Collateral Item' : 'Create New Collateral Item'}</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="mb-6">
-          <div className="flex space-x-2">
-            <div className="flex-1">
-              <Label htmlFor="searchName">Search by Name</Label>
-              <Input
-                id="searchName"
-                value={searchName}
-                onChange={(e) => setSearchName(e.target.value)}
-                placeholder="Enter collateral name to search"
-              />
-            </div>
-            <div className="flex items-end">
-              <Button onClick={handleSearch}>Search</Button>
+        {!hideSearch && (
+          <div className="mb-6">
+            <div className="flex space-x-2">
+              <div className="flex-1">
+                <Label htmlFor="searchName">Search by Name</Label>
+                <Input
+                  id="searchName"
+                  value={searchName}
+                  onChange={(e) => setSearchName(e.target.value)}
+                  placeholder="Enter collateral name to search"
+                />
+              </div>
+              <div className="flex items-end">
+                <Button onClick={handleSearch}>Search</Button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         <form onSubmit={handleSubmit}>
           <div className="space-y-4">
