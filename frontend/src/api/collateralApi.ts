@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/api/collateral';
+const API_URL = 'http://localhost:8080/api';
 
 export interface CollateralItem {
   id?: string;
@@ -9,6 +9,13 @@ export interface CollateralItem {
   appraisalDate: string;
   createdAt?: string;
   updatedAt?: string;
+  creDatapoints?: Record<string, any>;
+}
+
+export interface CREGlossaryTerm {
+  id: string;
+  term: string;
+  definition: string;
 }
 
 export interface CollateralHistory {
@@ -46,6 +53,11 @@ export const updateCollateralItem = async (id: string, item: CollateralItem): Pr
 };
 
 export const getCollateralHistory = async (id: string): Promise<CollateralHistory[]> => {
-  const response = await axios.get(`${API_URL}/${id}/history`);
+  const response = await axios.get(`${API_URL}/collateral/${id}/history`);
+  return response.data;
+};
+
+export const getAllGlossaryTerms = async (): Promise<CREGlossaryTerm[]> => {
+  const response = await axios.get(`${API_URL}/glossary`);
   return response.data;
 };
