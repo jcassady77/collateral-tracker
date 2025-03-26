@@ -17,7 +17,6 @@ const CollateralList: React.FC<CollateralListProps> = ({ searchResult, onUpdate 
   const [collateralItems, setCollateralItems] = useState<CollateralItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [historyData, setHistoryData] = useState<any[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
 
@@ -56,7 +55,6 @@ const CollateralList: React.FC<CollateralListProps> = ({ searchResult, onUpdate 
   }, [searchResult]);
 
   const handleViewHistory = (id: string) => {
-    setSelectedItemId(id);
     fetchHistory(id);
     if (onUpdate) {
       onUpdate();
@@ -111,13 +109,17 @@ const CollateralList: React.FC<CollateralListProps> = ({ searchResult, onUpdate 
                         <DialogTrigger asChild>
                           <Button 
                             variant="outline" 
-                            size="sm" 
-                            onClick={() => handleViewHistory(item.id!)}
+                            size="sm"
                           >
                             <Eye className="h-4 w-4 mr-1" /> History
                           </Button>
                         </DialogTrigger>
-                        <DialogContent>
+                        <DialogContent className="max-w-3xl" onOpenAutoFocus={(e) => {
+                          e.preventDefault();
+                          if (item.id) {
+                            handleViewHistory(item.id);
+                          }
+                        }}>
                           <DialogHeader>
                             <DialogTitle>History for {item.name}</DialogTitle>
                           </DialogHeader>
