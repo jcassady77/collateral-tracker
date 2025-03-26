@@ -34,6 +34,10 @@ public class CollateralService {
     public Optional<CollateralItem> getCollateralItemByName(String name) {
         return collateralItemRepository.findByName(name);
     }
+    
+    public List<CollateralItem> searchCollateralItemsByPartialName(String partialName) {
+        return collateralItemRepository.findByNameContainingIgnoreCase(partialName);
+    }
 
     public CollateralItem createCollateralItem(CollateralItem collateralItem) {
         collateralItem.setCreatedAt(LocalDateTime.now());

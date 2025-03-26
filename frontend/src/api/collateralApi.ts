@@ -61,3 +61,8 @@ export const getAllGlossaryTerms = async (): Promise<CREGlossaryTerm[]> => {
   const response = await axios.get(`${API_URL}/glossary`);
   return response.data;
 };
+
+export const searchCollateralItems = async (query: string): Promise<CollateralItem[]> => {
+  const response = await axios.get(`${API_URL}/collateral/search/partial?query=${encodeURIComponent(query)}`);
+  return response.data;
+};

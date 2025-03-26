@@ -37,6 +37,11 @@ public class CollateralController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+    
+    @GetMapping("/search/partial")
+    public ResponseEntity<List<CollateralItem>> searchCollateralItems(@RequestParam String query) {
+        return ResponseEntity.ok(collateralService.searchCollateralItemsByPartialName(query));
+    }
 
     @PostMapping
     public ResponseEntity<?> createCollateralItem(@RequestBody CollateralItem collateralItem) {
