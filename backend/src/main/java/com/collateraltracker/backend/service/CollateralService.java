@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -60,6 +62,29 @@ public class CollateralService {
                     if (updatedItem.getAppraisalDate() != null && !updatedItem.getAppraisalDate().equals(existingItem.getAppraisalDate())) {
                         saveHistory(existingItem.getId(), "appraisalDate", existingItem.getAppraisalDate(), updatedItem.getAppraisalDate());
                         existingItem.setAppraisalDate(updatedItem.getAppraisalDate());
+                    }
+                    
+                    Map<String, Object> updatedDatapoints = updatedItem.getCreDatapoints();
+                    if (updatedDatapoints != null) {
+                        Map<String, Object> existingDatapoints = existingItem.getCreDatapoints();
+                        if (existingDatapoints == null) {
+                            existingDatapoints = new HashMap<>();
+                        }
+                        
+                        for (Map.Entry<String, Object> entry : updatedDatapoints.entrySet()) {
+                            String key = entry.getKey();
+                            Object newValue = entry.getValue();
+                            Object oldValue = existingDatapoints.get(key);
+                            
+                            if ((oldValue == null && newValue != null) || 
+                                (oldValue != null && !oldValue.equals(newValue))) {
+                                String oldValueStr = oldValue != null ? oldValue.toString() : "null";
+                                String newValueStr = newValue != null ? newValue.toString() : "null";
+                                saveHistory(existingItem.getId(), key, oldValueStr, newValueStr);
+                            }
+                        }
+                        
+                        existingItem.setCreDatapoints(updatedDatapoints);
                     }
                     
                     existingItem.setUpdatedAt(LocalDateTime.now());

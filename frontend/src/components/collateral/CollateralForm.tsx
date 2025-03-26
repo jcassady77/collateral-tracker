@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
@@ -13,11 +13,14 @@ import {
 } from "../../components/ui/dialog";
 import { 
   CollateralItem, 
+  CREGlossaryTerm,
   createCollateralItem, 
   updateCollateralItem, 
-  getCollateralItemByName 
+  getCollateralItemByName,
+  getAllGlossaryTerms
 } from '../../api/collateralApi';
 import { Calendar } from 'lucide-react';
+import { InfoIcon } from '../../components/ui/info-icon';
 
 interface CollateralFormProps {
   onSuccess?: () => void;
@@ -45,6 +48,22 @@ const CollateralForm: React.FC<CollateralFormProps> = ({
   const [success, setSuccess] = useState('');
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  
+  const [glossaryTerms, setGlossaryTerms] = useState<CREGlossaryTerm[]>([]);
+  const [creDatapoints, setCreDatapoints] = useState<Record<string, any>>({});
+
+  useEffect(() => {
+    const fetchGlossaryTerms = async () => {
+      try {
+        const terms = await getAllGlossaryTerms();
+        setGlossaryTerms(terms);
+      } catch (err) {
+        console.error('Failed to fetch glossary terms', err);
+      }
+    };
+    
+    fetchGlossaryTerms();
+  }, []);
 
   const resetForm = () => {
     setName('');
@@ -54,6 +73,7 @@ const CollateralForm: React.FC<CollateralFormProps> = ({
     setLocalIsUpdate(false);
     setError('');
     setSuccess('');
+    setCreDatapoints({});
   };
 
   const handleSearch = async () => {
@@ -68,13 +88,28 @@ const CollateralForm: React.FC<CollateralFormProps> = ({
       setName(item.name);
       setValue(item.value.toString());
       setAppraisalDate(item.appraisalDate);
+      
+      if (item.creDatapoints) {
+        setCreDatapoints(item.creDatapoints);
+      } else {
+        setCreDatapoints({});
+      }
+      
       setLocalIsUpdate(true);
       setError('');
     } catch (err) {
       setError('Collateral item not found');
       setCurrentItem(null);
       setLocalIsUpdate(false);
+      setCreDatapoints({});
     }
+  };
+  
+  const handleDatapointChange = (term: string, value: any) => {
+    setCreDatapoints(prev => ({
+      ...prev,
+      [term]: value
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -119,7 +154,8 @@ const CollateralForm: React.FC<CollateralFormProps> = ({
       const collateralItem: CollateralItem = {
         name,
         value: parseFloat(value),
-        appraisalDate: appraisalDate
+        appraisalDate: appraisalDate,
+        creDatapoints: creDatapoints
       };
 
       if (localIsUpdate && currentItem?.id) {
@@ -224,6 +260,26 @@ const CollateralForm: React.FC<CollateralFormProps> = ({
                   }}
                 />
                 <Calendar className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
+              </div>
+            </div>
+
+            <div className="mt-8 mb-4">
+              <h3 className="text-lg font-medium mb-4">CRE Datapoints</h3>
+              <div className="space-y-4">
+                {glossaryTerms.map((term) => (
+                  <div key={term.id} className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <Label htmlFor={`cre-${term.term}`}>{term.term}</Label>
+                      <InfoIcon content={term.definition} />
+                    </div>
+                    <Input
+                      id={`cre-${term.term}`}
+                      value={creDatapoints[term.term] || ''}
+                      onChange={(e) => handleDatapointChange(term.term, e.target.value)}
+                      placeholder={`Enter ${term.term}`}
+                    />
+                  </div>
+                ))}
               </div>
             </div>
 

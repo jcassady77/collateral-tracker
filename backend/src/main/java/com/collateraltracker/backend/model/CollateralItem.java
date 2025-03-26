@@ -4,6 +4,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @Document(collection = "collateral_items")
 public class CollateralItem {
@@ -16,6 +18,12 @@ public class CollateralItem {
     private LocalDate appraisalDate;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    
+    private Map<String, Object> creDatapoints;
+    
+    public CollateralItem() {
+        this.creDatapoints = new HashMap<>();
+    }
     
     public String getId() {
         return id;
@@ -63,5 +71,27 @@ public class CollateralItem {
     
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+    
+    public Map<String, Object> getCreDatapoints() {
+        return creDatapoints;
+    }
+    
+    public void setCreDatapoints(Map<String, Object> creDatapoints) {
+        this.creDatapoints = creDatapoints;
+    }
+    
+    public void setCreDatapoint(String key, Object value) {
+        if (this.creDatapoints == null) {
+            this.creDatapoints = new HashMap<>();
+        }
+        this.creDatapoints.put(key, value);
+    }
+    
+    public Object getCreDatapoint(String key) {
+        if (this.creDatapoints == null) {
+            return null;
+        }
+        return this.creDatapoints.get(key);
     }
 }
