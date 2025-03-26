@@ -1,0 +1,29 @@
+# Backend
+/backend/target/
+/backend/.settings/
+/backend/.classpath
+/backend/.project
+/backend/.factorypath
+/backend/.apt_generated/
+/backend/.springBeans
+/backend/.sts4-cache
+
+# Frontend
+/frontend/node_modules/
+/frontend/dist/
+/frontend/.vite/
+/frontend/build/
+/frontend/npm-debug.log*
+/frontend/yarn-debug.log*
+/frontend/yarn-error.log*
+/frontend/.env
+/frontend/.env.local
+/frontend/.env.development.local
+/frontend/.env.test.local
+/frontend/.env.production.local
+
+# General
+.DS_Store
+.idea/
+*.iml
+*.log
