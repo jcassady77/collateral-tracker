@@ -1,8 +1,16 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+import { 
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter
+} from "../../components/ui/dialog";
 import { 
   CollateralItem, 
   createCollateralItem, 
@@ -26,6 +34,7 @@ const CollateralForm: React.FC<CollateralFormProps> = ({
   isUpdate = false,
   hideSearch = false
 }) => {
+  const navigate = useNavigate();
   const [name, setName] = useState(initialData?.name || '');
   const [value, setValue] = useState(initialData?.value ? initialData.value.toString() : '');
   const [appraisalDate, setAppraisalDate] = useState(initialData?.appraisalDate || '');
@@ -34,6 +43,8 @@ const CollateralForm: React.FC<CollateralFormProps> = ({
   const [currentItem, setCurrentItem] = useState<CollateralItem | null>(initialData);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   const resetForm = () => {
     setName('');
@@ -113,44 +124,66 @@ const CollateralForm: React.FC<CollateralFormProps> = ({
 
       if (localIsUpdate && currentItem?.id) {
         await updateCollateralItem(currentItem.id, collateralItem);
-        setSuccess('Collateral item updated successfully');
+        setSuccessMessage('Collateral item updated successfully');
       } else {
         await createCollateralItem(collateralItem);
-        setSuccess('Collateral item created successfully');
+        setSuccessMessage('Collateral item created successfully');
       }
       
-      resetForm();
-      onSuccess();
+      setShowSuccessDialog(true);
     } catch (err) {
       console.error('Error saving collateral item:', err);
       setError('Failed to save collateral item');
     }
   };
 
+  const handleNavigateHome = () => {
+    resetForm();
+    navigate('/');
+    onSuccess();
+  };
+
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>{isUpdate ? 'Update Collateral Item' : 'Create New Collateral Item'}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        {!hideSearch && (
-          <div className="mb-6">
-            <div className="flex space-x-2">
-              <div className="flex-1">
-                <Label htmlFor="searchName">Search by Name</Label>
-                <Input
-                  id="searchName"
-                  value={searchName}
-                  onChange={(e) => setSearchName(e.target.value)}
-                  placeholder="Enter collateral name to search"
-                />
-              </div>
-              <div className="flex items-end">
-                <Button onClick={handleSearch}>Search</Button>
+    <>
+      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Success</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p>{successMessage}</p>
+          </div>
+          <DialogFooter>
+            <Button onClick={handleNavigateHome}>
+              Return to Home
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle>{isUpdate ? 'Update Collateral Item' : 'Create New Collateral Item'}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {!hideSearch && (
+            <div className="mb-6">
+              <div className="flex space-x-2">
+                <div className="flex-1">
+                  <Label htmlFor="searchName">Search by Name</Label>
+                  <Input
+                    id="searchName"
+                    value={searchName}
+                    onChange={(e) => setSearchName(e.target.value)}
+                    placeholder="Enter collateral name to search"
+                  />
+                </div>
+                <div className="flex items-end">
+                  <Button onClick={handleSearch}>Search</Button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
         <form onSubmit={handleSubmit}>
           <div className="space-y-4">
@@ -209,6 +242,7 @@ const CollateralForm: React.FC<CollateralFormProps> = ({
         </form>
       </CardContent>
     </Card>
+    </>
   );
 };
 

@@ -64,6 +64,7 @@ const UpdatePage: React.FC = () => {
             <CollateralForm 
               initialData={collateralItem} 
               isUpdate={true} 
+              hideSearch={true}
               onSuccess={handleUpdateSuccess}
             />
           )}

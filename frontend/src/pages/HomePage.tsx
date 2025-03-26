@@ -59,6 +59,11 @@ const HomePage: React.FC = () => {
                 value={searchName}
                 onChange={(e) => setSearchName(e.target.value)}
                 placeholder="Enter collateral name to search"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSearch();
+                  }
+                }}
               />
             </div>
             <div className="flex items-end">
