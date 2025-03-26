@@ -3,14 +3,22 @@ import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
-import { CollateralItem, createCollateralItem, updateCollateralItem, getCollateralItemByName } from '../../api/collateralApi';
+import { 
+  CollateralItem, 
+  createCollateralItem, 
+  updateCollateralItem, 
+  getCollateralItemByName 
+} from '../../api/collateralApi';
 import { Calendar } from 'lucide-react';
 
 interface CollateralFormProps {
-  onSuccess: () => void;
+  onSuccess?: () => void;
+  showNameWarning?: boolean;
 }
 
-const CollateralForm: React.FC<CollateralFormProps> = ({ onSuccess }) => {
+const CollateralForm: React.FC<CollateralFormProps> = ({ 
+  onSuccess = () => {}, showNameWarning = false 
+}) => {
   const [name, setName] = useState('');
   const [value, setValue] = useState('');
   const [appraisalDate, setAppraisalDate] = useState('');
@@ -60,12 +68,34 @@ const CollateralForm: React.FC<CollateralFormProps> = ({ onSuccess }) => {
     }
 
     try {
+      const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+      if (!dateRegex.test(appraisalDate)) {
+        setError('Please enter a valid date in YYYY-MM-DD format');
+        return;
+      }
+      
       const selectedDate = new Date(appraisalDate);
+      
+      if (isNaN(selectedDate.getTime())) {
+        setError('Please enter a valid date');
+        return;
+      }
+      
       const maxAllowedYear = new Date().getFullYear() + 100; // Allow dates up to 100 years in the future
       
       if (selectedDate.getFullYear() > maxAllowedYear) {
         setError(`Appraisal date cannot be more than 100 years in the future (${maxAllowedYear})`);
         return;
+      }
+      
+      if (showNameWarning && !isUpdate) {
+        try {
+          await getCollateralItemByName(name);
+          setError(`A collateral item with the name "${name}" already exists. Please choose a different name.`);
+          return;
+        } catch (err) {
+          console.log('Name is unique, proceeding with creation');
+        }
       }
       
       const collateralItem: CollateralItem = {
@@ -142,11 +172,13 @@ const CollateralForm: React.FC<CollateralFormProps> = ({ onSuccess }) => {
               <div className="relative">
                 <Input
                   id="appraisalDate"
-                  type="date"
+                  type="text"
+                  placeholder="YYYY-MM-DD"
                   value={appraisalDate}
                   onChange={(e) => {
                     const dateValue = e.target.value;
                     setAppraisalDate(dateValue);
+                    setError('');
                   }}
                 />
                 <Calendar className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />

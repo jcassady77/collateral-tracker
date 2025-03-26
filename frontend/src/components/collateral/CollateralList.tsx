@@ -7,7 +7,12 @@ import { format } from 'date-fns';
 import { Eye } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../../components/ui/dialog";
 
-const CollateralList: React.FC = () => {
+interface CollateralListProps {
+  searchResult?: CollateralItem | null;
+  onUpdate?: () => void;
+}
+
+const CollateralList: React.FC<CollateralListProps> = ({ searchResult, onUpdate }) => {
   const [collateralItems, setCollateralItems] = useState<CollateralItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -18,8 +23,12 @@ const CollateralList: React.FC = () => {
   const fetchCollateralItems = async () => {
     setLoading(true);
     try {
-      const data = await getAllCollateralItems();
-      setCollateralItems(data);
+      if (searchResult) {
+        setCollateralItems([searchResult]);
+      } else {
+        const data = await getAllCollateralItems();
+        setCollateralItems(data);
+      }
       setError('');
     } catch (err) {
       setError('Failed to fetch collateral items');
@@ -43,11 +52,14 @@ const CollateralList: React.FC = () => {
 
   useEffect(() => {
     fetchCollateralItems();
-  }, []);
+  }, [searchResult]);
 
   const handleViewHistory = (id: string) => {
     setSelectedItemId(id);
     fetchHistory(id);
+    if (onUpdate) {
+      onUpdate();
+    }
   };
 
   const formatDate = (dateString: string) => {
