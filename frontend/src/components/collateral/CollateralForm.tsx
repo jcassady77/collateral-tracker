@@ -60,12 +60,18 @@ const CollateralForm: React.FC<CollateralFormProps> = ({ onSuccess }) => {
     }
 
     try {
-      const formattedDate = "2023-03-15";
+      const selectedDate = new Date(appraisalDate);
+      const maxAllowedYear = new Date().getFullYear() + 100; // Allow dates up to 100 years in the future
+      
+      if (selectedDate.getFullYear() > maxAllowedYear) {
+        setError(`Appraisal date cannot be more than 100 years in the future (${maxAllowedYear})`);
+        return;
+      }
       
       const collateralItem: CollateralItem = {
         name,
         value: parseFloat(value),
-        appraisalDate: formattedDate
+        appraisalDate: appraisalDate
       };
 
       if (isUpdate && currentItem?.id) {

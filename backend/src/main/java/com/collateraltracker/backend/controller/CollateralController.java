@@ -6,8 +6,10 @@ import com.collateraltracker.backend.service.CollateralService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @RestController
@@ -37,18 +39,34 @@ public class CollateralController {
     }
 
     @PostMapping
-    public ResponseEntity<CollateralItem> createCollateralItem(@RequestBody CollateralItem collateralItem) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(collateralService.createCollateralItem(collateralItem));
+    public ResponseEntity<?> createCollateralItem(@RequestBody CollateralItem collateralItem) {
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(collateralService.createCollateralItem(collateralItem));
+        } catch (DateTimeParseException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Invalid date format: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error creating collateral item: " + e.getMessage());
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CollateralItem> updateCollateralItem(
+    public ResponseEntity<?> updateCollateralItem(
             @PathVariable String id,
             @RequestBody CollateralItem collateralItem) {
-        return collateralService.updateCollateralItem(id, collateralItem)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        try {
+            return collateralService.updateCollateralItem(id, collateralItem)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (DateTimeParseException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Invalid date format: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error updating collateral item: " + e.getMessage());
+        }
     }
 
     @GetMapping("/{id}/history")
